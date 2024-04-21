@@ -1,5 +1,5 @@
 # encoding:utf-8
-
+import json
 import time
 
 import openai
@@ -84,11 +84,12 @@ class ChatGPTBot(Bot, OpenAIImage):
                     reply_content["completion_tokens"],
                 )
             )
-            if reply_content["completion_tokens"] == 0 and len(reply_content["content"]) > 0:
-                reply = Reply(ReplyType.ERROR, reply_content["content"])
-            elif reply_content["completion_tokens"] > 0:
+            # sangea 优化if...else...结构
+            if reply_content["completion_tokens"] > 0:
                 self.sessions.session_reply(reply_content["content"], session_id, reply_content["total_tokens"])
                 reply = Reply(ReplyType.TEXT, reply_content["content"])
+            elif len(reply_content["content"]) > 0:
+                reply = Reply(ReplyType.ERROR, reply_content["content"])
             else:
                 reply = Reply(ReplyType.ERROR, reply_content["content"])
                 logger.debug("[CHATGPT] reply {} used 0 tokens.".format(reply_content))
@@ -123,10 +124,21 @@ class ChatGPTBot(Bot, OpenAIImage):
             response = openai.ChatCompletion.create(api_key=api_key, messages=session.messages, **args)
             # logger.debug("[CHATGPT] response={}".format(response))
             # logger.info("[ChatGPT] reply={}, total_tokens={}".format(response.choices[0]['message']['content'], response["usage"]["total_tokens"]))
+            # sangea 兼容非标准响应的API，如果response是字符串，就尝试解析成dict。
+            if isinstance(response, str):
+                response = json.loads(response)
+            # sangea 兼容非标准响应的API，如果不存在`usage.total_tokens`、`usage.completion_tokens`，就添加并设置为0
+            usage = response.setdefault("usage", {})
+            usage.setdefault("total_tokens", 0)
+            usage.setdefault("completion_tokens", 0)
+            # sangea 兼容非标准响应的API，如果`message.content`长度大于0，而`usage.completion_tokens`为0，就将`usage.completion_tokens`设置为1（视为请求成功）
+            content = response['choices'][0]["message"]["content"]
+            if len(content) > 0 and usage["completion_tokens"] == 0:
+                usage["completion_tokens"] = 1
             return {
                 "total_tokens": response["usage"]["total_tokens"],
                 "completion_tokens": response["usage"]["completion_tokens"],
-                "content": response.choices[0]["message"]["content"],
+                "content": content,
             }
         except Exception as e:
             need_retry = retry_count < 2
