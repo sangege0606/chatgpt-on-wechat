@@ -43,7 +43,7 @@ class XunFeiBot(Bot):
         # 默认使用v2.0版本: "generalv2"
         # v1.5版本为 "general"
         # v3.0版本为: "generalv3"
-        self.domain = "generalv3"
+        self.domain = conf().get("xunfei_api_domain", "generalv3")
         # 默认使用v2.0版本: "ws://spark-api.xf-yun.com/v2.1/chat"
         # v1.5版本为: "ws://spark-api.xf-yun.com/v1.1/chat"
         # v3.0版本为: "ws://spark-api.xf-yun.com/v3.1/chat"
