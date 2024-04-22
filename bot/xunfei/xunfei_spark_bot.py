@@ -48,7 +48,8 @@ class XunFeiBot(Bot):
         # v1.5版本为: "ws://spark-api.xf-yun.com/v1.1/chat"
         # v3.0版本为: "ws://spark-api.xf-yun.com/v3.1/chat"
         # v3.5版本为: "wss://spark-api.xf-yun.com/v3.5/chat"
-        self.spark_url = "wss://spark-api.xf-yun.com/v3.5/chat"
+        # sangea 新增配置项`xunfei_api_url`，使用者配置自己使用的星火模型版本对应的url，默认`ws://spark-api.xf-yun.com/v3.5/chat`
+        self.spark_url = conf().get("xunfei_api_url", "ws://spark-api.xf-yun.com/v3.5/chat")
         self.host = urlparse(self.spark_url).netloc
         self.path = urlparse(self.spark_url).path
         # 和wenxin使用相同的session机制
