@@ -5,6 +5,7 @@ import logging
 import os
 import pickle
 
+from common import const
 from common.log import logger
 
 # 将所有可用的配置项写在字典里, 请使用小写字母
@@ -152,7 +153,7 @@ available_setting = {
     "appdata_dir": "",  # 数据目录
     # 插件配置
     "plugin_trigger_prefix": "$",  # 规范插件提供聊天相关指令的前缀，建议不要和管理员指令前缀"#"冲突
-    # 是否使用全局插件配置
+    # 是否使用全局插件配置 sangea 代码中没用到。docker运行时不方便对每个插件目录进行映射，故增加统一管理的入口，优先加载 plugins/config.json
     "use_global_plugin_config": False,
     "max_media_send_count": 3,     # 单次最大发送媒体资源的个数
     "media_send_interval": 1,  # 发送图片的事件间隔，单位秒
@@ -164,6 +165,9 @@ available_setting = {
     "linkai_api_key": "",
     "linkai_app_code": "",
     "linkai_api_base": "https://api.link-ai.chat",  # linkAI服务地址，若国内无法访问或延迟较高可改为 https://api.link-ai.tech
+
+    # sangea 新增配置项
+    "custom_model_list": [""],  # 自定义模型列表，扩展项目中内置的模型列表
 }
 
 
@@ -252,6 +256,10 @@ def load_config():
                     config[name] = True
                 else:
                     config[name] = value
+
+    if custom_model_list := config["custom_model_list"]:
+        logger.info("[INIT] custom model list: {}".format(custom_model_list))
+        const.MODEL_LIST += custom_model_list
 
     if config.get("debug", False):
         logger.setLevel(logging.DEBUG)
