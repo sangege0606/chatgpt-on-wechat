@@ -76,8 +76,6 @@ available_setting = {
     "xunfei_api_secret": "",  # 讯飞 API secret
     "xunfei_domain": "",  # 讯飞模型对应的domain参数，Spark4.0 Ultra为 4.0Ultra，其他模型详见: https://www.xfyun.cn/doc/spark/Web.html
     "xunfei_spark_url": "",  # 讯飞模型对应的请求地址，Spark4.0 Ultra为 wss://spark-api.xf-yun.com/v4.0/chat，其他模型参考详见: https://www.xfyun.cn/doc/spark/Web.html
-    "xunfei_api_domain": "generalv3",  # 讯飞 API domain，目前支持general、generalv2、generalv3，默认`generalv3`
-    "xunfei_api_url": "ws://spark-api.xf-yun.com/v3.5/chat",  # 星火 API url，默认`ws://spark-api.xf-yun.com/v3.5/chat`
     # claude 配置
     "claude_api_cookie": "",
     "claude_uuid": "",
